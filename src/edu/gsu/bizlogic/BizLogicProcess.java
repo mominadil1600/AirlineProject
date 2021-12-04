@@ -2,28 +2,49 @@ package edu.gsu.bizlogic;
 
 import edu.gsu.common.Action;
 import edu.gsu.common.Customer;
+import edu.gsu.common.Flight;
 import edu.gsu.db.DBQueries;
 
 public class BizLogicProcess {
-	
-	public static void process(Customer co) throws Exception {
-		
+
+	/** process customer operations
+	 * 
+	 * @param co
+	 * @throws Exception
+	 */
+	public static void processCustomer(Customer co) throws Exception {
+
 		switch (co.getAction()) {
-		
-			case Action.LOGIN:
-			
-				DBQueries.login(co);
-				break;
-			case Action.GET_FLIGHTS:
-				DBQueries.getFlights(co);
-				break;
-		    
+		case Action.LOGIN:
+			DBQueries.login(co);
+			break;
+		case Action.BOOK_TICKETS:
+			DBQueries.bookTicket(co.getCustomerID(),co.getFlights().get(0));
+			break;
+		case Action.GET_FLIGHTS:
+			DBQueries.getFlights(co);
+			break;
+		case Action.REGISTER:
+			DBQueries.registration(co.getRegistration(), "Customer");
+			break;
 		}
 	}
-	
-	
-	
-	
-	
+
+	/** process flight operations
+	 * 
+	 * @param flight
+	 * @throws Exception
+	 */
+	public static void processFlight(Flight flight) throws Exception {
+
+		switch (flight.getAction()) {
+		case Action.ADD_FLIGHTS:
+			DBQueries.addFlight(flight);
+			break;
+		case Action.DELETE_FLIGHTS:
+			DBQueries.deleteFlight(flight);
+			break;
+		}
+	}
 
 }
