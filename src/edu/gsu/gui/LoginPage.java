@@ -83,7 +83,7 @@ public class LoginPage extends Application {
 	  Customer customer = new Customer();
 	  
 	  customer.setUserName(userName);
-	  customer.setPassword(password);
+	  customer.setPassWord(password);
 	  customer.setAction(Action.LOGIN);
 	  
 	  System.out.println("Customer:" + userName + " " + password);

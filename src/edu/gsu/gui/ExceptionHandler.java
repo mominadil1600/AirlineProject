@@ -11,7 +11,7 @@ public class ExceptionHandler {
 		
 		try {
 			
-			BizLogicProcess.process(co);
+			BizLogicProcess.processCustomer(co);
 			
 		} catch (Exception ex) {
 			

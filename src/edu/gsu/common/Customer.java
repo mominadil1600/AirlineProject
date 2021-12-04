@@ -2,14 +2,11 @@ package edu.gsu.common;
 
 import java.util.ArrayList;
 
-public class Customer {
+public class Customer extends User{
 	
 	private int customerID;
-	private String firstName;
-	private String lastName;
-	private String userName;
-	private String password;
 	private ArrayList<Flight> flights;
+	private Registration registration;
 	private String action;
 	
 	
@@ -18,33 +15,31 @@ public class Customer {
 		flights = new ArrayList<>();
 	}
 	
-	public String getFirstName() {
-		return firstName;
+	public int getCustomerID() {
+		return customerID;
 	}
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
+
+
+	public void setCustomerID(int customerID) {
+		this.customerID = customerID;
 	}
-	public String getLastName() {
-		return lastName;
+
+
+	public Registration getRegistration() {
+		return registration;
 	}
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
+
+
+	public void setRegistration(Registration registration) {
+		this.registration = registration;
 	}
-	public String getUserName() {
-		return userName;
-	}
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
-	public String getPassword() {
-		return password;
-	}
-	public void setPassword(String password) {
-		this.password = password;
-	}
+
+
 	public ArrayList<Flight> getFlights() {
 		return flights;
 	}
+
+
 	public void setFlights(ArrayList<Flight> flights) {
 		this.flights = flights;
 	}

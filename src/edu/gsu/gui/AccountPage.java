@@ -37,7 +37,7 @@ public class AccountPage extends Application {
 
         for (int i = 0; i < customer.getFlights().size(); i++) {
         
-        	listView.getItems().add(customer.getFlights().get(i).getAirlineName());
+        	//listView.getItems().add(customer.getFlights().get(i).getAirlineName());
 
         }
 
