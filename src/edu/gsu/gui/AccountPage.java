@@ -1,12 +1,9 @@
 package edu.gsu.gui;
 
-
-
-
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+
 import edu.gsu.common.Action;
 import edu.gsu.common.Customer;
 import edu.gsu.common.Flight;
@@ -17,15 +14,14 @@ import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 public class AccountPage extends Application {
@@ -226,7 +222,7 @@ public class AccountPage extends Application {
 
 		flight.setAction(Action.DELETE_FLIGHT);
 
-		boolean success = ExceptionHandler.processFlight(flight);
+		boolean success = ExceptionHandler.process(flight);
 
 		if (success) {
 
@@ -357,7 +353,7 @@ public class AccountPage extends Application {
 
 		flight.setAction(Action.ADD_FLIGHT);
 
-		boolean success = ExceptionHandler.processFlight(flight);
+		boolean success = ExceptionHandler.process(flight);
 
 		if (success) {
 			System.out.println("Successful Added Flight!");
