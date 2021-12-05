@@ -9,56 +9,40 @@ import javafx.scene.control.Alert.AlertType;
 public class ExceptionHandler {
 
 	public static boolean process(Customer co) {
-		
-		try {
-			System.out.println("am in procerss");
-			BizLogicProcess.processCustomer(co);
-			
-		} catch (Exception ex) {
-			
-			  Alert alert = new Alert(AlertType.ERROR);
-			  alert.setContentText(ex.getMessage());
-	      
-			  
-			  alert.getDialogPane().setStyle("-fx-font-family: 'serif'");
-             
 
-			  alert.showAndWait();
-			  return false;
-		}
-		
-		return true;
-		
-		
-		
-	}
-	
-	
-public static boolean processFlight(Flight flight) {
-		
 		try {
-			
-			BizLogicProcess.processFlight(flight);
-			
-		} catch (Exception ex) {
-			
-			  Alert alert = new Alert(AlertType.ERROR);
-			  //alert.setTitle("Login Dialog");
-			  //alert.setHeaderText("Look, an Information Dialog");
-			  alert.setContentText(ex.getMessage());
-	      
-			  
-			  alert.getDialogPane().setStyle("-fx-font-family: 'serif'");
-             
+			BizLogicProcess.process(co);
 
-			  alert.showAndWait();
-			  return false;
+		} catch (Exception ex) {
+
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setContentText(ex.getMessage());
+			alert.getDialogPane().setStyle("-fx-font-family: 'serif'");
+			alert.showAndWait();
+			return false;
 		}
-		
+
 		return true;
-		
-		
-		
+
 	}
-	
+
+	public static boolean process(Flight flight) {
+
+		try {
+
+			BizLogicProcess.process(flight);
+
+		} catch (Exception ex) {
+
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setContentText(ex.getMessage());
+			alert.getDialogPane().setStyle("-fx-font-family: 'serif'");
+			alert.showAndWait();
+			return false;
+		}
+
+		return true;
+
+	}
+
 }

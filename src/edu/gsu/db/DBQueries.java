@@ -19,6 +19,11 @@ import edu.gsu.excpetions.SQLOperationException;
 
 public class DBQueries {
 	
+	/**
+	 * Login method to validate user credentials
+	 * @param co
+	 * @throws Exception
+	 */
 	public static void login(Customer co) throws Exception {
 			
 		Connection connection = null;
@@ -60,6 +65,11 @@ public class DBQueries {
 		}
 	}    
 	
+	/**
+	 * Add flight to database
+	 * @param flight
+	 * @throws Exception
+	 */
 	public static void addFlight(Flight flight) throws Exception {
 		Connection connection = null;
 
@@ -98,7 +108,11 @@ public class DBQueries {
 		
 	}
 	
-	
+	/**
+	 * Delete flight from database
+	 * @param flight
+	 * @throws Exception
+	 */
 	public static void deleteFlight(Flight flight) throws Exception {
 		Connection connection = null;
 
@@ -181,7 +195,11 @@ public class DBQueries {
 		}
 	}
 
-	
+	/**
+	 * Get flights for a customer
+	 * @param co
+	 * @throws Exception
+	 */
 	public static void getFlights(Customer co) throws Exception {
 
 		Connection connection = null;
@@ -222,18 +240,12 @@ public class DBQueries {
 		}
 	}
 	
-	public static void main(String[] args) throws Exception {
-		
-		//Customer c0 = new Customer();
-		//login(c0);
-		Flight flight = new Flight("AirIndia",100,"Atlanta","Hyderabad",10,"OPEN");
-		flight.setFid(2);
-		//addFlight(flight);
-		//deleteFlight(flight);
-		bookTicket(1,flight);
-		
-	}
-
+	/**
+	 * Registration for a new user
+	 * @param registration
+	 * @param userType
+	 * @throws Exception
+	 */
 	public static void registration(Registration registration, String userType) throws Exception {
 
 		Connection connection = null;
@@ -299,6 +311,12 @@ public class DBQueries {
 		}
 	}
 
+	/**
+	 * Book ticket for a customer
+	 * @param customerID
+	 * @param flight
+	 * @throws Exception
+	 */
 	public static void bookTicket(int customerID, Flight flight) throws Exception {
 
 		Connection connection = null;
@@ -308,7 +326,7 @@ public class DBQueries {
 			
 			// checking the customer  has already have the booking with same flight
 			if(checkCustomerReservation(customerID, flight)) {
-			throw new ReservationException("Customer is already have booking with same flight");
+			throw new ReservationException("Customer is already have booking with same flight, Please choose different flight.");
 			}
 
 			// checking flight seat availability
@@ -364,6 +382,11 @@ public class DBQueries {
 
 	}
 	
+	/**
+	 * Recover password with security question, answer and username
+	 * @param co
+	 * @throws Exception
+	 */
 	public static void recoverPassword(Customer co) throws Exception {
 
 		Connection connection = null;
@@ -420,67 +443,79 @@ public class DBQueries {
 
 	}
 	
+	/**
+	 * Checking flight is full or some seats available
+	 * @param flight
+	 * @return
+	 * @throws Exception
+	 */
 	private static boolean checkFlightSeatAvailability(Flight flight) throws Exception {
 		Connection connection = null;
-		boolean  isSeatsExist = true;
+		boolean isSeatsExist = true;
 		try {
-		connection = DriverManager.getConnection("jdbc:mysql://localhost/project", "root", "Adimahi6");
-		System.out.println("Connection is succesful.");
+			connection = DriverManager.getConnection("jdbc:mysql://localhost/project", "root", "Adimahi6");
+			System.out.println("Connection is succesful.");
 
-		// the mysql select statement for user
-		String query = "SELECT * from project.flight where fid=?";
+			// the mysql select statement for user
+			String query = "SELECT * from project.flight where fid=?";
 
-		PreparedStatement preparedStmt = connection.prepareStatement(query);
-		preparedStmt.setInt(1, flight.getFid());
-		ResultSet resultSet = preparedStmt.executeQuery();
-		while (resultSet.next()) {
-		if(resultSet.getInt("capacity") == resultSet.getInt("seatsBooked")) {
-		System.out.println("Seats FULL");
-		isSeatsExist = false;
-		}
-		}
-		System.out.println("Flight details are retrieved.");
+			PreparedStatement preparedStmt = connection.prepareStatement(query);
+			preparedStmt.setInt(1, flight.getFid());
+			ResultSet resultSet = preparedStmt.executeQuery();
+			while (resultSet.next()) {
+				if (resultSet.getInt("capacity") == resultSet.getInt("seatsBooked")) {
+					System.out.println("Seats FULL");
+					isSeatsExist = false;
+				}
+			}
+			System.out.println("Flight details are retrieved.");
 		} catch (SQLException e) {
-		System.out.println(e);
-		throw new SQLOperationException(e.getMessage());
+			System.out.println(e);
+			throw new SQLOperationException(e.getMessage());
 		} finally {
 
-		connection.close();
+			connection.close();
 		}
 		return isSeatsExist;
-		}
+	}
 
-		private static boolean checkCustomerReservation(int customerID, Flight flight) throws Exception {
-		boolean  isExist = false;
+	/**
+	 * Checking customer reservation
+	 * @param customerID
+	 * @param flight
+	 * @return
+	 * @throws Exception
+	 */
+	private static boolean checkCustomerReservation(int customerID, Flight flight) throws Exception {
+		boolean isExist = false;
 		Connection connection = null;
 
 		try {
-		connection = DriverManager.getConnection("jdbc:mysql://localhost/project", "root", "Adimahi6");
-		String query = " select * from project.reservation where fid = ? and userid=?";
+			connection = DriverManager.getConnection("jdbc:mysql://localhost/project", "root", "Adimahi6");
+			String query = " select * from project.reservation where fid = ? and userid=?";
 
-		// create the mysql select preparedstatement
-		PreparedStatement preparedStmt = connection.prepareStatement(query);
-		preparedStmt.setInt(1, flight.getFid());
-		preparedStmt.setInt(2, customerID);
+			// create the mysql select preparedstatement
+			PreparedStatement preparedStmt = connection.prepareStatement(query);
+			preparedStmt.setInt(1, flight.getFid());
+			preparedStmt.setInt(2, customerID);
 
-		// Execute a statement
-		ResultSet resultSet = preparedStmt.executeQuery();
-		while (resultSet.next()) {
-		isExist =true;
-		}
-		System.out.println("Customer has already reservation : "+isExist);
+			// Execute a statement
+			ResultSet resultSet = preparedStmt.executeQuery();
+			while (resultSet.next()) {
+				isExist = true;
+			}
+			System.out.println("Customer has already reservation : " + isExist);
 		} catch (SQLException e) {
-		System.out.println(e);
-		throw new SQLOperationException(e.getMessage());
+			System.out.println(e);
+			throw new SQLOperationException(e.getMessage());
 		} finally {
 
-		connection.close();
+			connection.close();
 		}
 
 		return isExist;
 
-
-		}
+	}
 	
 
 }

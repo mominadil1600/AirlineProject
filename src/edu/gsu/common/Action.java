@@ -9,17 +9,13 @@ public class Action {
 	public static final String REGISTER = "Register";
 	// For ticket booking
 	public static final String BOOK_TICKETS = "Book Ticket";
-
-	// Adding Flights
+	// Adding Flight
 	public static final String ADD_FLIGHT = "Add Flight";
-
-	// Deleting Flights
+	// Deleting Flight
 	public static final String DELETE_FLIGHT = "Delete Flight";
-	
-	
+	// search flights
 	public static final String SEARCH_FLIGHTS = "Search Flights";
-	
+	// Recover password
 	public static final String RECOVER_PASSWORD = "Recover Password";
-	
 
 }
