@@ -38,10 +38,13 @@ public class BizLogicProcess {
 	public static void processFlight(Flight flight) throws Exception {
 
 		switch (flight.getAction()) {
-		case Action.ADD_FLIGHTS:
+		case Action.ADD_FLIGHT:
 			DBQueries.addFlight(flight);
 			break;
-		case Action.DELETE_FLIGHTS:
+		case Action.DELETE_FLIGHT:
+			DBQueries.deleteFlight(flight);
+			break;
+		case Action.SEARCH_FLIGHTS:
 			DBQueries.deleteFlight(flight);
 			break;
 		}

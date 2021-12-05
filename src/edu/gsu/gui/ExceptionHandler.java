@@ -17,8 +17,6 @@ public class ExceptionHandler {
 		} catch (Exception ex) {
 			
 			  Alert alert = new Alert(AlertType.ERROR);
-			  //alert.setTitle("Login Dialog");
-			  //alert.setHeaderText("Look, an Information Dialog");
 			  alert.setContentText(ex.getMessage());
 	      
 			  
