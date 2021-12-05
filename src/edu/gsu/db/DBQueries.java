@@ -12,7 +12,9 @@ import java.util.List;
 import edu.gsu.common.Customer;
 import edu.gsu.common.Flight;
 import edu.gsu.common.Registration;
+import edu.gsu.excpetions.AuthenicateException;
 import edu.gsu.excpetions.LoginException;
+import edu.gsu.excpetions.ReservationException;
 import edu.gsu.excpetions.SQLOperationException;
 
 public class DBQueries {
@@ -27,7 +29,7 @@ public class DBQueries {
 			System.out.println("Database connected");
 
 			// Create a statement
-			PreparedStatement statement = connection.prepareStatement(Queries.LOGIN);
+			PreparedStatement statement = connection.prepareStatement("SELECT *  FROM user WHERE username =? AND password =?");
 				    
 			statement.setString(1, co.getUserName());
 			statement.setString(2, co.getPassWord());
@@ -39,7 +41,8 @@ public class DBQueries {
 
 			// Iterate through the result and print the student names
 			while (resultSet.next()) {
-				System.out.println("Number of Users:" + resultSet.getInt(1));
+				System.out.println("Userid:  " + resultSet.getInt("userid"));
+				co.setCustomerID(resultSet.getInt("userid"));
 				count = resultSet.getInt(1);
 			}
 			
@@ -134,8 +137,8 @@ public class DBQueries {
 
 		try {
 			connection = DriverManager.getConnection("jdbc:mysql://localhost/project", "root", "Adimahi6");
-			System.out.println("Connection is succesful.");
 
+			
 			Flight requestFlight = co.getFlights().get(0);
 			// the mysql select statement for user
 			String query = "SELECT * from project.flight where fromCity=? and toCity=?";
@@ -147,10 +150,13 @@ public class DBQueries {
 			ResultSet resultSet = preparedStmt.executeQuery();
 			co.setFlights(new ArrayList<>()); // reset flight details from customer object
 			
+
 			List<Flight> flights = new ArrayList<>();
+			co.setFlights(new ArrayList<>());
 			// Iterate through the result and print the student names
 			while (resultSet.next()) {
 				Flight flight = new Flight();
+
 				flight.setFid(resultSet.getInt("fid"));
 				flight.setName(resultSet.getString("fname"));
 				flight.setNumber(resultSet.getInt("fno"));
@@ -160,6 +166,7 @@ public class DBQueries {
 				flight.setStatus(resultSet.getString("status"));
 				flight.setSeatsBooked(resultSet.getInt("seatsBooked"));
 				flight.setDatetime(resultSet.getDate("date"));
+				
 				flights.add(flight);
 			}
 			co.getFlights().addAll(flights);
@@ -167,7 +174,8 @@ public class DBQueries {
 		} catch (SQLException e) {
 			System.out.println(e);
 			throw new SQLOperationException(e.getMessage());
-		} finally {
+		} 
+		finally {
 
 			connection.close();
 		}
@@ -296,7 +304,18 @@ public class DBQueries {
 		Connection connection = null;
 
 		try {
-			connection = DriverManager.getConnection("jdbc:mysql://localhost/project", "root", "admin");
+			connection = DriverManager.getConnection("jdbc:mysql://localhost/project", "root", "Adimahi6");
+			
+			// checking the customer  has already have the booking with same flight
+			if(checkCustomerReservation(customerID, flight)) {
+			throw new ReservationException("Customer is already have booking with same flight");
+			}
+
+			// checking flight seat availability
+			if(!checkFlightSeatAvailability(flight)) {
+			throw new ReservationException("Flight is full!! Please choose different flight.");
+			}
+			
 
 			// create a sql date object so we can use it in our INSERT statement
 			String query = " insert into project.reservation (userid, fid)" + " values (?, ?)";
@@ -344,6 +363,125 @@ public class DBQueries {
 		}
 
 	}
+	
+	public static void recoverPassword(Customer co) throws Exception {
+
+		Connection connection = null;
+
+		try {
+		connection = DriverManager.getConnection("jdbc:mysql://localhost/project", "root", "Adimahi6");
+
+		// create the mysql insert preparedstatement
+		PreparedStatement statement = connection.prepareStatement(" select * from project.user where username=?");
+		statement.setString(1, co.getRegistration().getUsername()); // user table primary key
+
+		// Execute a statement
+		ResultSet resultSet = statement.executeQuery();
+		String password = null;
+		int userid = 0; 
+		while (resultSet.next()) {
+		password = resultSet.getString("password");
+		userid = resultSet.getInt("userid");
+		}
+
+		if(userid == 0) {
+		throw new AuthenicateException(" User is not present");
+		}
+
+		statement = connection
+		.prepareStatement("select * from project.registration where answer=? and securityQ=?  and userid=?");
+
+		statement.setString(1, co.getRegistration().getAnswer());
+		statement.setString(2, co.getRegistration().getSecurityQ());
+		statement.setInt(3, userid);
+
+		// Execute a statement
+		resultSet = statement.executeQuery();
+
+		boolean recordPresent = false;
+		while (resultSet.next()) {
+		recordPresent = true;
+		}
+
+		if(!recordPresent) {
+		throw new AuthenicateException("security answer is not correct, please try again!!");
+		}
+
+		co.getRegistration().setPassword(password);
+
+		System.out.println("Password recovered succesfully .");
+		} catch (SQLException e) {
+		System.out.println(e);
+		throw new SQLOperationException(e.getMessage());
+		} finally {
+
+		connection.close();
+		}
+
+	}
+	
+	private static boolean checkFlightSeatAvailability(Flight flight) throws Exception {
+		Connection connection = null;
+		boolean  isSeatsExist = true;
+		try {
+		connection = DriverManager.getConnection("jdbc:mysql://localhost/project", "root", "Adimahi6");
+		System.out.println("Connection is succesful.");
+
+		// the mysql select statement for user
+		String query = "SELECT * from project.flight where fid=?";
+
+		PreparedStatement preparedStmt = connection.prepareStatement(query);
+		preparedStmt.setInt(1, flight.getFid());
+		ResultSet resultSet = preparedStmt.executeQuery();
+		while (resultSet.next()) {
+		if(resultSet.getInt("capacity") == resultSet.getInt("seatsBooked")) {
+		System.out.println("Seats FULL");
+		isSeatsExist = false;
+		}
+		}
+		System.out.println("Flight details are retrieved.");
+		} catch (SQLException e) {
+		System.out.println(e);
+		throw new SQLOperationException(e.getMessage());
+		} finally {
+
+		connection.close();
+		}
+		return isSeatsExist;
+		}
+
+		private static boolean checkCustomerReservation(int customerID, Flight flight) throws Exception {
+		boolean  isExist = false;
+		Connection connection = null;
+
+		try {
+		connection = DriverManager.getConnection("jdbc:mysql://localhost/project", "root", "Adimahi6");
+		String query = " select * from project.reservation where fid = ? and userid=?";
+
+		// create the mysql select preparedstatement
+		PreparedStatement preparedStmt = connection.prepareStatement(query);
+		preparedStmt.setInt(1, flight.getFid());
+		preparedStmt.setInt(2, customerID);
+
+		// Execute a statement
+		ResultSet resultSet = preparedStmt.executeQuery();
+		while (resultSet.next()) {
+		isExist =true;
+		}
+		System.out.println("Customer has already reservation : "+isExist);
+		} catch (SQLException e) {
+		System.out.println(e);
+		throw new SQLOperationException(e.getMessage());
+		} finally {
+
+		connection.close();
+		}
+
+		return isExist;
+
+
+		}
+	
 
 }
 

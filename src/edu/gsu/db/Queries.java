@@ -4,7 +4,7 @@ public class Queries {
 	
 	
 	//Query for log in access
-	public static final String LOGIN = "SELECT count(*) as num  FROM user WHERE username =? AND password =?";
+	public static final String LOGIN = "SELECT *  FROM user WHERE username =? AND password =?";
 	
 	
 	//Query for Regsitering  (NOT FINAL QUERY STILL WORKING ON IT)

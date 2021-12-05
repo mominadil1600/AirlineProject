@@ -13,7 +13,7 @@ public class BizLogicProcess {
 	 * @throws Exception
 	 */
 	public static void processCustomer(Customer co) throws Exception {
-
+System.out.println("am in switch");
 		switch (co.getAction()) {
 		case Action.LOGIN:
 			DBQueries.login(co);
@@ -27,6 +27,13 @@ public class BizLogicProcess {
 		case Action.REGISTER:
 			DBQueries.registration(co.getRegistration(), "Customer");
 			break;
+		case Action.RECOVER_PASSWORD:
+			DBQueries.recoverPassword(co);
+			break;
+		case Action.SEARCH_FLIGHTS:
+			DBQueries.searchFlights(co);
+			break;
+			
 		}
 	}
 
@@ -44,9 +51,7 @@ public class BizLogicProcess {
 		case Action.DELETE_FLIGHT:
 			DBQueries.deleteFlight(flight);
 			break;
-		case Action.SEARCH_FLIGHTS:
-			DBQueries.deleteFlight(flight);
-			break;
+		
 		}
 	}
 

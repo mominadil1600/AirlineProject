@@ -16,7 +16,10 @@ public class Action {
 	// Deleting Flights
 	public static final String DELETE_FLIGHT = "Delete Flight";
 	
-	// Deleting Flights
+	
 	public static final String SEARCH_FLIGHTS = "Search Flights";
+	
+	public static final String RECOVER_PASSWORD = "Recover Password";
+	
 
 }

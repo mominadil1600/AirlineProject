@@ -11,7 +11,7 @@ public class ExceptionHandler {
 	public static boolean process(Customer co) {
 		
 		try {
-			
+			System.out.println("am in procerss");
 			BizLogicProcess.processCustomer(co);
 			
 		} catch (Exception ex) {

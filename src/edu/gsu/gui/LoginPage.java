@@ -7,10 +7,12 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
@@ -20,12 +22,17 @@ public class LoginPage extends Application {
 	Button loginButton = new Button("Login");
 	Button back = new Button("Back");
 	Button Submit = new Button("Submit");
+	Button forgotPasswordButton = new Button("Forgot Password ");
+	Button findPass = new Button("Find");
+	Button cancel = new Button("Cancel");
 
 	Scene scene2;
-	Stage window;
+	Stage window, LoginScreen;
+	
 
 	@Override // Override the start method in the Application class
 	public void start(Stage primaryStage) {
+		LoginScreen = primaryStage;
 		// Create a GridPane and set its properties
 		GridPane pane = new GridPane();
 		pane.setPadding(new Insets(10, 10, 10, 10));
@@ -34,8 +41,12 @@ public class LoginPage extends Application {
 
 		// Button loginButton = new Button("Login");
 		TextField userName = new TextField();
+		userName.setPromptText(("Username"));
 		GridPane.setConstraints(userName, 1, 1);
+		
+		
 		TextField password = new TextField();
+		password.setPromptText("Password");
 		GridPane.setConstraints(password, 1, 3);
 
 		loginButton.setOnAction(e -> login(userName.getText(), password.getText()));
@@ -43,8 +54,19 @@ public class LoginPage extends Application {
 
 		registerButton.setOnAction(e -> handle(e));
 		GridPane.setConstraints(registerButton, 2, 5);
+		
+		
+		//Forgot Password
+		forgotPasswordButton.setOnAction(e -> {
+			
+			handleForgotPassword(e);
+			
+			
+		});
+		GridPane.setConstraints(forgotPasswordButton, 2, 6);
+		
 
-		pane.getChildren().addAll(userName, password, loginButton, registerButton);
+		pane.getChildren().addAll(userName, password, loginButton, registerButton, forgotPasswordButton);
 
 		// Create a scene and place it in the stage
 		Scene scene = new Scene(pane, 500, 500);
@@ -52,9 +74,9 @@ public class LoginPage extends Application {
 
 		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 
-		primaryStage.setTitle("BookTickets"); // Set the stage title
-		primaryStage.setScene(scene); // Place the scene in the stage
-		primaryStage.show(); // Display the stage
+		LoginScreen.setTitle("BookTickets"); // Set the stage title
+		LoginScreen.setScene(scene); // Place the scene in the stage
+		LoginScreen.show(); // Display the stage
 
 	}
 
@@ -86,6 +108,7 @@ public class LoginPage extends Application {
 			success = ExceptionHandler.process(customer);
 
 			if (success) {
+				System.out.println("Customer id once logged in: "+customer.getCustomerID());
 
 				Stage stage = (Stage) loginButton.getScene().getWindow();
 
@@ -136,7 +159,9 @@ public class LoginPage extends Application {
 		}
 
 	}
-
+	
+	
+//Register Action Event Method
 	public void handle(ActionEvent Register) {
 
 		final Stage REGISTER = new Stage();
@@ -292,5 +317,126 @@ public class LoginPage extends Application {
 			REGISTER.show();
 		}
 	}
+	
+	
+	//Forgot password Action Event Method
+	public void handleForgotPassword(ActionEvent forgotPassword) {
+		
+		final Stage FORGOT_PASSWORD = new Stage();
+		
+		if(forgotPassword.getSource() == forgotPasswordButton) {
+			
+		
+		
+		
+		
+		GridPane recoveryMenu = new GridPane();
+		recoveryMenu.setPadding(new Insets(10, 10, 10, 10));
+		recoveryMenu.setVgap(8);
+		recoveryMenu.setHgap(10);
+		
+		//Recover username label and Textfield
+		Label recoverUsername = new Label("Enter Username");
+		GridPane.setConstraints(recoverUsername, 1, 1);
+		
+		TextField recoverUsernameInput = new TextField();
+		GridPane.setConstraints(recoverUsernameInput, 1, 2);
+		
+		
+		//Security Question Label
+		Label securityLabel = new Label("Security Question");
+		GridPane.setConstraints(securityLabel, 1, 3);
+	
+		
+		//Security Question choices
+		ComboBox securityQRecovery = new ComboBox<>();
+		securityQRecovery.getItems().add("What was the name of your first pet? ");
+		securityQRecovery.getItems().add("What is your mothers maiden name? ");
+		GridPane.setConstraints(securityQRecovery, 1, 4);
+		
+		
+		
+		//Answer to Security Q lable and TextField
+		Label recoverAnswer = new Label("Enter answer to security question");
+		GridPane.setConstraints(recoverAnswer, 1, 5);
+		
+		TextField recoverAnswerInput = new TextField();
+		GridPane.setConstraints(recoverAnswerInput, 1, 6);
+	
+		
+		
+		//Find Button connects do databse and retrieves password
+		findPass.setOnAction(e -> {
+			
+			recoverPassword(recoverUsernameInput.getText(), securityQRecovery.getValue(), recoverAnswerInput.getText()); 
+			
+		});
+		GridPane.setConstraints(findPass, 10, 10);
+		
+		
+		//Cancel Button to go back to previous screen;
+		cancel.setOnAction(e -> {
+			
+			FORGOT_PASSWORD.close();
+			
+			
+		});
+		
+		GridPane.setConstraints(cancel, 1, 10);
+		
+		
+		
+		
+		
+		recoveryMenu.getChildren().addAll(recoverUsername, recoverUsernameInput, recoverAnswer, recoverAnswerInput,securityQRecovery,securityLabel,findPass, cancel);
+		
+		Scene recovery = new Scene(recoveryMenu, 600, 600);
+		recovery.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+		
+		FORGOT_PASSWORD.setTitle("Recover Account");
+		FORGOT_PASSWORD.setScene(recovery);
+		FORGOT_PASSWORD.show();
+		
+		
+		}
+		
+		
+	}
 
+	private void recoverPassword(String username, Object question, String answer) {
+		Customer customer = new Customer();
+		
+
+		Registration r = new Registration();
+		
+		
+		r.setUsername(username);
+		r.setAnswer(answer);
+		r.setSecurityQ(question.toString());
+		customer.setRegistration(r);
+		customer.setAction(Action.RECOVER_PASSWORD);
+
+		
+
+		boolean success = ExceptionHandler.process(customer);
+
+		if (success) {
+			System.out.println("Successful Recovery!");
+
+			 Alert alert = new Alert(AlertType.INFORMATION);
+			 
+			 alert.setHeaderText("Succesful Recovery");
+			  alert.setContentText(" Password: " + 
+					  customer.getRegistration().getPassword());
+	      
+			  
+			  alert.getDialogPane().setStyle("-fx-font-family: 'serif'");
+			  //alert.getDialogPane().setStyle("-fx-background-color: 'blue'");
+			 
+
+			  alert.showAndWait();
+			
+			
+		}	
+	}
 }
