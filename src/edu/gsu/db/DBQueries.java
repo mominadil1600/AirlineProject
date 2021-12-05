@@ -13,6 +13,7 @@ import edu.gsu.common.Customer;
 import edu.gsu.common.Flight;
 import edu.gsu.common.Registration;
 import edu.gsu.excpetions.LoginException;
+import edu.gsu.excpetions.SQLOperationException;
 
 public class DBQueries {
 	
@@ -47,7 +48,6 @@ public class DBQueries {
 				     
 	    
 		} catch (SQLException e) {
-				// TODO Auto-generated catch block
 			System.out.println(e);
 			throw e;
 		}
@@ -68,7 +68,7 @@ public class DBQueries {
 			Calendar calendar = Calendar.getInstance();
 			java.sql.Date date = new java.sql.Date(calendar.getTime().getTime());
 
-			// the mysql insert statement for user
+			// the mysql insert statement for flight
 			String query = " insert into project.flight (fname, fno, fromCity, toCity, capacity, status, seatsBooked, date)" + " values (?, ?, ?,?,?,?,?,?)";
 
 			// create the mysql insert preparedstatement
@@ -87,7 +87,7 @@ public class DBQueries {
 			System.out.println("Flight details are added .");
 		} catch (SQLException e) {
 			System.out.println(e);
-			throw e;
+			throw new SQLOperationException(e.getMessage());
 		} finally {
 
 			connection.close();
@@ -115,54 +115,102 @@ public class DBQueries {
 			System.out.println("Flight details are deleted .");
 		} catch (SQLException e) {
 			System.out.println(e);
-			throw e;
+			throw new SQLOperationException(e.getMessage());
 		} finally {
 
 			connection.close();
 		}
 		
 	}
+	
+	/**
+	 * Search flight based on fromCity and toCity
+	 * @param co
+	 * @throws Exception
+	 */
+	public static void searchFlights(Customer co) throws Exception {
+
+		Connection connection = null;
+
+		try {
+			connection = DriverManager.getConnection("jdbc:mysql://localhost/project", "root", "Adimahi6");
+			System.out.println("Connection is succesful.");
+
+			Flight requestFlight = co.getFlights().get(0);
+			// the mysql select statement for user
+			String query = "SELECT * from project.flight where fromCity=? and toCity=?";
+
+			PreparedStatement preparedStmt = connection.prepareStatement(query);
+			preparedStmt.setString(1, requestFlight.getFromCity());
+			preparedStmt.setString(2, requestFlight.getToCity());
+			
+			ResultSet resultSet = preparedStmt.executeQuery();
+			co.setFlights(new ArrayList<>()); // reset flight details from customer object
+			
+			List<Flight> flights = new ArrayList<>();
+			// Iterate through the result and print the student names
+			while (resultSet.next()) {
+				Flight flight = new Flight();
+				flight.setFid(resultSet.getInt("fid"));
+				flight.setName(resultSet.getString("fname"));
+				flight.setNumber(resultSet.getInt("fno"));
+				flight.setFromCity(resultSet.getString("fromCity"));
+				flight.setToCity(resultSet.getString("toCity"));
+				flight.setCapacity(resultSet.getInt("capacity"));
+				flight.setStatus(resultSet.getString("status"));
+				flight.setSeatsBooked(resultSet.getInt("seatsBooked"));
+				flight.setDatetime(resultSet.getDate("date"));
+				flights.add(flight);
+			}
+			co.getFlights().addAll(flights);
+			System.out.println("Flight details are retrieved.");
+		} catch (SQLException e) {
+			System.out.println(e);
+			throw new SQLOperationException(e.getMessage());
+		} finally {
+
+			connection.close();
+		}
+	}
 
 	
 	public static void getFlights(Customer co) throws Exception {
 
-		 
-		 Connection connection = null;
+		Connection connection = null;
 
 		try {
-		connection = DriverManager.getConnection("jdbc:mysql://localhost/project", "root", "Adimahi6");
-		System.out.println("Connection is succesful.");
+			connection = DriverManager.getConnection("jdbc:mysql://localhost/project", "root", "Adimahi6");
+			System.out.println("Connection is succesful.");
 
-		// the mysql delete statement for user
-		String query = "SELECT * from project.flight";
+			// the mysql select statement for user
+			String query = "SELECT * from project.flight";
 
-		// create the mysql delete preparedstatement
-		PreparedStatement preparedStmt = connection.prepareStatement(query);
-		ResultSet resultSet = preparedStmt.executeQuery();
-		co.setFlights(new ArrayList<>());
-		List<Flight> flights = new ArrayList<>();
-		// Iterate through the result and print the student names
-		while (resultSet.next()) {
-		Flight flight = new Flight();
-		flight.setFid(resultSet.getInt("fid"));
-		flight.setName(resultSet.getString("fname"));
-		flight.setNumber(resultSet.getInt ("fno"));
-		flight.setFromCity(resultSet.getString ("fromCity"));
-		flight.setToCity(resultSet.getString ("toCity"));
-		flight.setCapacity(resultSet.getInt ("capacity"));
-		flight.setStatus(resultSet.getString ("status"));
-		flight.setSeatsBooked(resultSet.getInt ("seatsBooked"));
-		flight.setDatetime(resultSet.getDate ("date"));
-		flights.add(flight);
-		}
-		co.getFlights().addAll(flights);
-		System.out.println("Flight details are retrieved.");
+			PreparedStatement preparedStmt = connection.prepareStatement(query);
+			ResultSet resultSet = preparedStmt.executeQuery();
+			co.setFlights(new ArrayList<>());
+			List<Flight> flights = new ArrayList<>();
+			// Iterate through the result and print the student names
+			while (resultSet.next()) {
+				Flight flight = new Flight();
+				flight.setFid(resultSet.getInt("fid"));
+				flight.setName(resultSet.getString("fname"));
+				flight.setNumber(resultSet.getInt("fno"));
+				flight.setFromCity(resultSet.getString("fromCity"));
+				flight.setToCity(resultSet.getString("toCity"));
+				flight.setCapacity(resultSet.getInt("capacity"));
+				flight.setStatus(resultSet.getString("status"));
+				flight.setSeatsBooked(resultSet.getInt("seatsBooked"));
+				flight.setDatetime(resultSet.getDate("date"));
+				flights.add(flight);
+			}
+			co.getFlights().addAll(flights);
+			System.out.println("Flight details are retrieved.");
 		} catch (SQLException e) {
-		System.out.println(e);
-		throw e;
+			System.out.println(e);
+			throw new SQLOperationException(e.getMessage());
 		} finally {
 
-		connection.close();
+			connection.close();
 		}
 	}
 	
@@ -172,9 +220,9 @@ public class DBQueries {
 		//login(c0);
 		Flight flight = new Flight("AirIndia",100,"Atlanta","Hyderabad",10,"OPEN");
 		flight.setFid(2);
-		addFlight(flight);
+		//addFlight(flight);
 		//deleteFlight(flight);
-		//bookTicket(1,flight);
+		bookTicket(1,flight);
 		
 	}
 
@@ -184,11 +232,6 @@ public class DBQueries {
 
 		try {
 			connection = DriverManager.getConnection("jdbc:mysql://localhost/project", "root", "Adimahi6");
-			// ("jdbc:mysql://104.196.113.68/test","root","password");
-
-			// create a sql date object so we can use it in our INSERT statement
-			Calendar calendar = Calendar.getInstance();
-			java.sql.Date registrationDate = new java.sql.Date(calendar.getTime().getTime());
 
 			// the mysql insert statement for user
 			String query = " insert into project.user (usertype, username, password)" + " values (?, ?, ?)";
@@ -241,7 +284,7 @@ public class DBQueries {
 			System.out.println("Registration details are inserted .");
 		} catch (SQLException e) {
 			System.out.println(e);
-			throw e;
+			throw new SQLOperationException(e.getMessage());
 		} finally {
 
 			connection.close();
@@ -253,7 +296,7 @@ public class DBQueries {
 		Connection connection = null;
 
 		try {
-			connection = DriverManager.getConnection("jdbc:mysql://localhost/project", "root", "Adimahi6");
+			connection = DriverManager.getConnection("jdbc:mysql://localhost/project", "root", "admin");
 
 			// create a sql date object so we can use it in our INSERT statement
 			String query = " insert into project.reservation (userid, fid)" + " values (?, ?)";
@@ -265,11 +308,36 @@ public class DBQueries {
 
 			// Execute a statement
 			preparedStmt.executeUpdate();
+			
+			
+			// increase the seat booked for the flight 
+			query = " select * from project.flight where fid = ?";
 
-			System.out.println("Reservation details are inserted .");
+			// create the mysql select preparedstatement
+			preparedStmt = connection.prepareStatement(query);
+			preparedStmt.setInt(1, flight.getFid());
+
+			// Execute a statement
+			ResultSet resultSet = preparedStmt.executeQuery();
+			int seatsBooked = 0;
+			while (resultSet.next()) {
+				seatsBooked = resultSet.getInt("seatsBooked");
+			}
+			System.out.println("seats booked before update :: "+seatsBooked);
+			
+			// create a sql date object so we can use it in our INSERT statement
+			query = " update project.flight set seatsBooked = ? where fid=?";
+
+			// create the mysql insert preparedstatement
+			preparedStmt = connection.prepareStatement(query);
+			preparedStmt.setInt(1, (seatsBooked+1));
+			preparedStmt.setInt(2, flight.getFid());
+
+			// Execute a statement
+			preparedStmt.executeUpdate();
 		} catch (SQLException e) {
 			System.out.println(e);
-			throw e;
+			throw new SQLOperationException(e.getMessage());
 		} finally {
 
 			connection.close();

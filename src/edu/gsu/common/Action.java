@@ -11,9 +11,12 @@ public class Action {
 	public static final String BOOK_TICKETS = "Book Ticket";
 
 	// Adding Flights
-	public static final String ADD_FLIGHTS = "Add Flight";
+	public static final String ADD_FLIGHT = "Add Flight";
 
 	// Deleting Flights
-	public static final String DELETE_FLIGHTS = "Delete Flight";
+	public static final String DELETE_FLIGHT = "Delete Flight";
+	
+	// Deleting Flights
+	public static final String SEARCH_FLIGHTS = "Search Flights";
 
 }

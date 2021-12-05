@@ -3,8 +3,7 @@ package edu.gsu.common;
 import java.util.Date;
 
 public class Flight {
-	static int seatsBooked;
-
+	private int seatsBooked;
 	private int fid;
 	private String name;
 	private int number;
@@ -85,12 +84,12 @@ public class Flight {
 		this.datetime = datetime;
 	}
 
-	public static int getSeatsBooked() {
+	public int getSeatsBooked() {
 		return seatsBooked;
 	}
 
-	public static void setSeatsBooked(int seatsBooked) {
-		Flight.seatsBooked = seatsBooked;
+	public void setSeatsBooked(int seatsBooked) {
+		this.seatsBooked = seatsBooked;
 	}
 
 	public String getAction() {
