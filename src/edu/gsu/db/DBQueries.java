@@ -5,7 +5,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import edu.gsu.common.Customer;
 import edu.gsu.common.Flight;
@@ -20,7 +22,7 @@ public class DBQueries {
 		
 		try {
 			connection = DriverManager.getConnection
-					      ("jdbc:mysql://localhost/project","root","admin");
+					      ("jdbc:mysql://localhost/project","root","Adimahi6");
 			System.out.println("Database connected");
 
 			// Create a statement
@@ -59,7 +61,7 @@ public class DBQueries {
 		Connection connection = null;
 
 		try {
-			connection = DriverManager.getConnection("jdbc:mysql://localhost/project", "root", "admin");
+			connection = DriverManager.getConnection("jdbc:mysql://localhost/project", "root", "Adimahi6");
 			System.out.println("Connection is succesful.");
 
 			// create a sql date object so we can use it in our INSERT statement
@@ -98,7 +100,7 @@ public class DBQueries {
 		Connection connection = null;
 
 		try {
-			connection = DriverManager.getConnection("jdbc:mysql://localhost/project", "root", "admin");
+			connection = DriverManager.getConnection("jdbc:mysql://localhost/project", "root", "Adimahi6");
 			System.out.println("Connection is succesful.");
 
 			// the mysql delete statement for user
@@ -123,21 +125,45 @@ public class DBQueries {
 
 	
 	public static void getFlights(Customer co) throws Exception {
-		/*
-		 * 
-		 * 
-		 * Flight f1 = new Flight(); f1.setAirlineName("Delta");
-		 * 
-		 * 
-		 * 
-		 * Flight f2 = new Flight(); f2.setAirlineName("Spirit");
-		 * 
-		 * 
-		 * Flight f3 = new Flight(); f3.setAirlineName("American Airlines");
-		 * 
-		 * 
-		 * co.getFlights().add(f1); co.getFlights().add(f2); co.getFlights().add(f3);
-		 */
+
+		 
+		 Connection connection = null;
+
+		try {
+		connection = DriverManager.getConnection("jdbc:mysql://localhost/project", "root", "Adimahi6");
+		System.out.println("Connection is succesful.");
+
+		// the mysql delete statement for user
+		String query = "SELECT * from project.flight";
+
+		// create the mysql delete preparedstatement
+		PreparedStatement preparedStmt = connection.prepareStatement(query);
+		ResultSet resultSet = preparedStmt.executeQuery();
+		co.setFlights(new ArrayList<>());
+		List<Flight> flights = new ArrayList<>();
+		// Iterate through the result and print the student names
+		while (resultSet.next()) {
+		Flight flight = new Flight();
+		flight.setFid(resultSet.getInt("fid"));
+		flight.setName(resultSet.getString("fname"));
+		flight.setNumber(resultSet.getInt ("fno"));
+		flight.setFromCity(resultSet.getString ("fromCity"));
+		flight.setToCity(resultSet.getString ("toCity"));
+		flight.setCapacity(resultSet.getInt ("capacity"));
+		flight.setStatus(resultSet.getString ("status"));
+		flight.setSeatsBooked(resultSet.getInt ("seatsBooked"));
+		flight.setDatetime(resultSet.getDate ("date"));
+		flights.add(flight);
+		}
+		co.getFlights().addAll(flights);
+		System.out.println("Flight details are retrieved.");
+		} catch (SQLException e) {
+		System.out.println(e);
+		throw e;
+		} finally {
+
+		connection.close();
+		}
 	}
 	
 	public static void main(String[] args) throws Exception {
@@ -146,9 +172,9 @@ public class DBQueries {
 		//login(c0);
 		Flight flight = new Flight("AirIndia",100,"Atlanta","Hyderabad",10,"OPEN");
 		flight.setFid(2);
-		//addFlight(flight);
+		addFlight(flight);
 		//deleteFlight(flight);
-		bookTicket(1,flight);
+		//bookTicket(1,flight);
 		
 	}
 
@@ -157,7 +183,7 @@ public class DBQueries {
 		Connection connection = null;
 
 		try {
-			connection = DriverManager.getConnection("jdbc:mysql://localhost/project", "root", "admin");
+			connection = DriverManager.getConnection("jdbc:mysql://localhost/project", "root", "Adimahi6");
 			// ("jdbc:mysql://104.196.113.68/test","root","password");
 
 			// create a sql date object so we can use it in our INSERT statement
@@ -190,10 +216,11 @@ public class DBQueries {
 			while (resultSet.next()) {
 				userId = resultSet.getInt("userid");
 			}
+			System.out.println(userId + "UserID");
 
 			// the mysql insert statement for registration
 			query = " insert into project.registration (userid, firstName, lastName, address, zip, state, email, ssn, securityQ, answer)"
-					+ " values (?, ?, ?,?, ?, ?,?, ?, ?)";
+					+ " values (?, ?, ?,?, ?, ?,?, ?, ?, ?)";
 
 			// create the mysql insert preparedstatement
 			preparedStmt = connection.prepareStatement(query);
@@ -226,7 +253,7 @@ public class DBQueries {
 		Connection connection = null;
 
 		try {
-			connection = DriverManager.getConnection("jdbc:mysql://localhost/project", "root", "admin");
+			connection = DriverManager.getConnection("jdbc:mysql://localhost/project", "root", "Adimahi6");
 
 			// create a sql date object so we can use it in our INSERT statement
 			String query = " insert into project.reservation (userid, fid)" + " values (?, ?)";
