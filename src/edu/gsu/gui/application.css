@@ -4,6 +4,13 @@
     -fx-font-family: "Times New Roman";
 }
 
+
+.dialog-pane:header .header-panel .label{
+  -fx-background-color: yellow;
+  -fx-background-radius:10px;
+  -fx-text-fill:black;
+  -fx-font-size:15.0px;
+}
 /*
  * Will add more styles after funtionality is finsihed!!!!!!!
  * 
