@@ -44,7 +44,7 @@ public class DBQueries {
 			
 			int count = 0;
 
-			// Iterate through the result and print the student names
+			// Iterate through the result
 			while (resultSet.next()) {
 				System.out.println("Userid:  " + resultSet.getInt("userid"));
 				co.setCustomerID(resultSet.getInt("userid"));
@@ -167,7 +167,7 @@ public class DBQueries {
 
 			List<Flight> flights = new ArrayList<>();
 			co.setFlights(new ArrayList<>());
-			// Iterate through the result and print the student names
+			// Iterate through the result
 			while (resultSet.next()) {
 				Flight flight = new Flight();
 
@@ -196,11 +196,11 @@ public class DBQueries {
 	}
 
 	/**
-	 * Get flights for a customer
+	 * Get ALL flights from database
 	 * @param co
 	 * @throws Exception
 	 */
-	public static void getFlights(Customer co) throws Exception {
+	public static void getAllFlights(Customer co) throws Exception {
 
 		Connection connection = null;
 
@@ -215,7 +215,7 @@ public class DBQueries {
 			ResultSet resultSet = preparedStmt.executeQuery();
 			co.setFlights(new ArrayList<>());
 			List<Flight> flights = new ArrayList<>();
-			// Iterate through the result and print the student names
+			// Iterate through the result 
 			while (resultSet.next()) {
 				Flight flight = new Flight();
 				flight.setFid(resultSet.getInt("fid"));
@@ -515,6 +515,72 @@ public class DBQueries {
 
 		return isExist;
 
+	}
+	
+	/**
+	 * Get flights for a customer
+	 * @param co
+	 * @throws Exception
+	 */
+	public static void getFlights(Customer co) throws Exception {
+
+		Connection connection = null;
+
+		try {
+			connection = DriverManager.getConnection("jdbc:mysql://localhost/project", "root", "Adimahi6");
+			System.out.println("Connection is succesful.");
+			
+			String query = " select * from project.reservation where userid=?";
+
+			// create the mysql select preparedstatement
+			PreparedStatement preparedStmt = connection.prepareStatement(query);
+			preparedStmt.setInt(1, co.getCustomerID());
+
+			// Execute a statement
+			ResultSet resultSet = preparedStmt.executeQuery();
+			List<Integer> fids = new ArrayList<>();
+			int fid;
+			while (resultSet.next()) {
+				fid = resultSet.getInt("fid");
+				fids.add(fid);
+			}
+			
+			System.out.println("flight list: "+fids);
+			List<Flight> flights = new ArrayList<>();
+			co.setFlights(new ArrayList<>());
+			for(int i=0; i< fids.size();i++) {
+				// the mysql select statement for flight
+				query = "SELECT * from project.flight where fid =?";			
+
+				preparedStmt = connection.prepareStatement(query);
+				preparedStmt.setInt(1, fids.get(i));
+				resultSet = preparedStmt.executeQuery();
+				
+				// Iterate through the result
+				while (resultSet.next()) {
+					Flight flight = new Flight();
+					flight.setFid(resultSet.getInt("fid"));
+					flight.setName(resultSet.getString("fname"));
+					flight.setNumber(resultSet.getInt("fno"));
+					flight.setFromCity(resultSet.getString("fromCity"));
+					flight.setToCity(resultSet.getString("toCity"));
+					flight.setCapacity(resultSet.getInt("capacity"));
+					flight.setStatus(resultSet.getString("status"));
+					flight.setSeatsBooked(resultSet.getInt("seatsBooked"));
+					flight.setDatetime(resultSet.getDate("date"));
+					flights.add(flight);
+				}
+			}
+
+			co.getFlights().addAll(flights);
+			System.out.println("Flight details are retrieved.");
+		} catch (SQLException e) {
+			System.out.println(e);
+			throw new SQLOperationException(e.getMessage());
+		} finally {
+
+			connection.close();
+		}
 	}
 	
 
