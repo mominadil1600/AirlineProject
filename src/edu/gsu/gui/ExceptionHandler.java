@@ -35,7 +35,7 @@ public class ExceptionHandler {
 		} catch (Exception ex) {
 
 			Alert alert = new Alert(AlertType.ERROR);
-			alert.setContentText(ex.getMessage());
+			alert.setContentText("Error Deleting Flight! Someone Has Booked a Ticket. ");
 			alert.getDialogPane().setStyle("-fx-font-family: 'serif'");
 			alert.showAndWait();
 			return false;

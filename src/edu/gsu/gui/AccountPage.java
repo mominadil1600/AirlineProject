@@ -24,15 +24,23 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
+
+
+
+
+
 public class AccountPage extends Application {
 
 	private Customer customer;
 	Button addFlight = new Button("Add Flight");
-	Button deleteFlight = new Button("Delete Flight");
+	Button back = new Button("Back");
+	
+	
 	Button bookTickets = new Button("Book Ticket");
 	Button submitFlight = new Button("Submit");
 	Button searchFlight = new Button("Search Flight");
 	Button logout = new Button("Logout");
+	Button allFlights = new Button("All Flights");
 	Scene addFlightScene, searchFlightScene, scene;
 
 	public AccountPage(Customer customer) {
@@ -42,14 +50,30 @@ public class AccountPage extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		primaryStage.setTitle("Flights");
+		primaryStage.setTitle("Account Page");
 
+		
+		
+		
+		//All Flights buttons
+		allFlights.setOnAction(e -> {
+			handleGetAllFlights(e);
+			
+			
+		});
+		
+		GridPane.setConstraints(allFlights, 10, 100);
+		
+		
+		
+		
+		
 		addFlight.setOnAction(e -> {
 
 			handleAddFlight(e);
 		});
 
-		GridPane.setConstraints(addFlight, 10, 100);
+		GridPane.setConstraints(addFlight, 10, 200);
 
 		TableView<Flight> table = new TableView<>();
 		
@@ -103,54 +127,8 @@ public class AccountPage extends Application {
 		table.setItems(GetFlights());
 		table.getColumns().addAll(nameColumn, numColumn, fromCityColumn, toCityColumn, dateColumn, capacityColumn, statusColumn, bookedColumn);
 
-		//Deletes Flight from Account 
-		deleteFlight.setOnAction(event -> {
-			ObservableList<Integer> selectedIndices = table.getSelectionModel().getSelectedIndices();
-
-			for (Object o : selectedIndices) {
-				System.out.println("Index = " + o + " (" + o.getClass() + ")");
-				System.out.println(table.getItems().get((Integer) o).getFid());
-				deleteFlight(table.getItems().get((Integer) o));
-			}
-				
-		});
 	
-
-		GridPane.setConstraints(deleteFlight, 10,1000);
-		
-		//Book Ticket 
-		bookTickets.setOnAction(e -> {
-			
-			ObservableList<Integer> selectedIndices = table.getSelectionModel().getSelectedIndices();
-			System.out.println(selectedIndices);
-			
-			if((selectedIndices.isEmpty())) {
-				
-				 Alert alert = new Alert(AlertType.ERROR);
-				  //alert.setTitle("Login Dialog");
-				  //alert.setHeaderText("Look, an Information Dialog");
-				  alert.setContentText("Please Select a Flight to book a ticket!");
-		      
-				  
-				  alert.getDialogPane().setStyle("-fx-font-family: 'serif'");
-	             
-
-				  alert.showAndWait();
-				
-				
-			}
-
-			for (Object o : selectedIndices) {
-				System.out.println("Index = " + o + " (" + o.getClass() + ")");
-				System.out.println(table.getItems().get((Integer) o).getFid());
-				bookFlight(table.getItems().get((Integer) o));
-				
-			
-			
-			
-			}});
-		GridPane.setConstraints(bookTickets, 10, 400);
-		
+	
 		
 		//Search Flights button
 		searchFlight.setOnAction(e -> {
@@ -158,14 +136,17 @@ public class AccountPage extends Application {
 			handleSearch(e);
 			
 		});
-			
+		GridPane.setConstraints(searchFlight, 10, 400);
 
+		
+		//Make a new GridPane Object
 		GridPane tablePane = new GridPane();
 		
+		//Stick the data in the object
+		tablePane.getChildren().addAll(table, addFlight, searchFlight, logout, allFlights);
 		
-		tablePane.getChildren().addAll(table, addFlight, deleteFlight, bookTickets, searchFlight, logout);
 		
-		
+		//Show Scene 
 		scene = new Scene(tablePane, 800, 800);
 		scene.getRoot().setStyle("-fx-font-family: 'serif'");
 		primaryStage.setScene(scene);
@@ -176,74 +157,15 @@ public class AccountPage extends Application {
 		//Log out Button
 		logout.setOnAction( e -> {
 				
-			
+			primaryStage.close();
 			
 		});
 
-		GridPane.setConstraints(logout, 10, 600);
-	}
-
-	private void bookFlight(Flight flight) {
-		
-		System.out.println("CustomerID " + customer.getCustomerID());
-		flight.setAction(Action.BOOK_TICKETS);
-		customer.setAction(Action.BOOK_TICKETS);
-		
-		customer.setFlights(new ArrayList<>());
-		customer.getFlights().add(flight);
-		
-
-		boolean success = ExceptionHandler.process(customer);
-
-		if (success) {
-
-			customer.setAction(Action.GET_FLIGHTS);
-
-			success = ExceptionHandler.process(customer);
-
-			if (success) {
-				AccountPage acc = new AccountPage(customer);
-
-				try {
-
-					acc.start(new Stage());
-
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		
+		GridPane.setConstraints(logout, 10, 500);
 	}
 
 	
-	//Delete Flight Method
-	public void deleteFlight(Flight flight) {
-
-		flight.setAction(Action.DELETE_FLIGHT);
-
-		boolean success = ExceptionHandler.process(flight);
-
-		if (success) {
-
-			customer.setAction(Action.GET_FLIGHTS);
-
-			success = ExceptionHandler.process(customer);
-
-			if (success) {
-				AccountPage acc = new AccountPage(customer);
-
-				try {
-
-					acc.start(new Stage());
-
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
-
-	}
+	
 	
 	
 
@@ -317,17 +239,26 @@ public class AccountPage extends Application {
 			GridPane.setConstraints(capacityInput, 3, 12);
 
 			Button submitFlight = new Button("Submit");
-			GridPane.setConstraints(submitFlight, 3, 13);
+			GridPane.setConstraints(submitFlight, 10, 13);
 			submitFlight.setOnAction(e -> {
 
 				// Databse Connection
 				addFlight(flightInput.getText(), flightNoInput.getText(), fromCityInput.getText(),
 						toCityInput.getText(), statusInput.getText(), capacityInput.getText());
-
+				
+				
 			});
+			
+			//Back button
+			back.setOnAction(e -> {
+				
+				ADD_FLIGHTS.close();
+				
+			});
+			GridPane.setConstraints(back,3, 13);
 
 			addFlightMenu.getChildren().addAll(flightName, flightInput, flightNo, flightNoInput, fromCity,
-					fromCityInput, toCity, toCityInput, status, statusInput, capacity, capacityInput, submitFlight);
+					fromCityInput, toCity, toCityInput, status, statusInput, capacity, capacityInput, submitFlight, back);
 
 			addFlightScene = new Scene(addFlightMenu, 900, 900);
 
@@ -358,13 +289,13 @@ public class AccountPage extends Application {
 		if (success) {
 			System.out.println("Successful Added Flight!");
 
-			customer.setAction(Action.GET_FLIGHTS);
+			customer.setAction(Action.GET_ALL_FLIGHTS);
 
 			success = ExceptionHandler.process(customer);
 
 			if (success) {
 
-				AccountPage acc = new AccountPage(customer);
+				FlightPage acc = new FlightPage(customer);
 
 				try {
 
@@ -462,11 +393,11 @@ public class AccountPage extends Application {
 
 
 
-				AccountPage acc = new AccountPage(customer);
+				FlightPage flightPage = new FlightPage(customer);
 
 				try {
 
-					acc.start(new Stage());
+					flightPage.start(new Stage());
 
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -477,7 +408,33 @@ public class AccountPage extends Application {
 	}
 	
 	
+	
+	
+	//All Flights Method
+	public void handleGetAllFlights(ActionEvent allF) {
+		customer.setAction(Action.GET_ALL_FLIGHTS);
 		
+
+		boolean success = ExceptionHandler.process(customer);
+
+		if (success) {
+			System.out.println("Successful");
+
+
+
+				FlightPage flightPage = new FlightPage(customer);
+
+				try {
+
+					flightPage.start(new Stage());
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			
+		}
+		
+	}
 	
 	
 	

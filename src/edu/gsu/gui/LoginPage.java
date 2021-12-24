@@ -1,5 +1,9 @@
 package edu.gsu.gui;
 
+//Logout button not working
+//Close windows
+//button alignments issues
+
 import edu.gsu.common.Action;
 import edu.gsu.common.Customer;
 import edu.gsu.common.Registration;

@@ -34,6 +34,9 @@ public class BizLogicProcess {
 		case Action.SEARCH_FLIGHTS:
 			DBQueries.searchFlights(co);
 			break;
+		case Action.GET_ALL_FLIGHTS:
+			DBQueries.getAllFlights(co);
+			break;
 
 		}
 	}
